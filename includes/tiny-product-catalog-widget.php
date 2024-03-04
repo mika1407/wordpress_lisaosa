@@ -56,10 +56,68 @@ class Tpcatalog_Widget extends WP_Widget {
         $instance = $old_instance;
         $instance['title'] = isset($new_instance['title']) ? wp_strip_all_tags($new_instance['title']) : '';
         $instance['category'] = isset($new_instance['category']) ? wp_strip_all_tags($new_instance['category']) : '';
+        return $instance;
     }
 
     public function widget($args, $instance) {
 
+        extract($args);
+
+        $title = isset($instance['title']) ? apply_filters('widget_title', $instance['title']) : '';
+        $category = isset($instance['category']) ?  $instance['category'] : 'all';
+
+        echo $before_widget;
+
+        echo '<div class="wp-widget-tpcatalog">';
+
+        if($title) :
+            echo $before_title . $title . $after_title;
+        endif;
+
+        if($category == 'all'):
+          $args = array(
+              'post_type' => 'tpcatalog_product',
+              'post_status' => 'publish',
+              'orderby' => 'rand',
+              'posts_per_page' => '1'
+          );
+        else:
+            $args = array(
+                'post_type' => 'tpcatalog_product',
+                'tax_query' => array(
+                    array(
+                          'taxonomy' => 'tpcatalog_category',
+                          'field' => 'slug',
+                          'terms' => $category
+                    )
+                ),
+                'post_status' => 'publish',
+                'orderby' => 'rand',
+                'posts_per_page' => '1'
+            );
+        endif;
+
+    $text = '';
+        $loop = new WP_Query($args);
+        if ($loop->have_posts()):
+            while($loop->have_posts()) : $loop->the_post();
+            $price = get_post_meta(get_the_ID(), '_tpcatalog_meta_price', true);
+            $text .= '<section class="tiny-product"><h3>' . get_the_title() . '</h3>';
+            $text .= '<p>' . $price . '</p>';
+            $text .= get_the_post_thumbnail();
+            $text .= '<p>' . get_the_content() . '</p></section>';
+            endwhile;
+        else:
+            $text .= '<p>Tuotteita ei löytynyt.</p>';
+        endif;
+
+        echo $text;
+
+        wp_reset_postdata();
+
+        echo '</div>';
+
+        echo $after_widget;
     }
 }
 

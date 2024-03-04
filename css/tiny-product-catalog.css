@@ -17,11 +17,16 @@
     margin-bottom: 10px;
 }
 
-.tiny-product-catalog .tiny-product h3 {
+.wp-widget-tpcatalog .tiny-product {
+    border: 2px solid #000000;
+    padding: 10px;
+}
+
+.tiny-product-catalog .tiny-product h3, .wp-widget-tpcatalog .tiny-product h3 {
     margin-top: 0;
 }
 
-.tiny-product-catalog .tiny-product img {
+.tiny-product-catalog .tiny-product img, .wp-widget-tpcatalog .tiny-product img {
     max-width: 100%;
     height: auto;
 }
